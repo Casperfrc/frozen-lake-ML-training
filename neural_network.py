@@ -1,35 +1,29 @@
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
 
-device = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps"
-    if torch.backends.mps.is_available()
-    else "cpu"
-)
-
-print(f"Using {device} device")
 
 class NeuralNetwork(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(1, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 4),
-        )
+    def __init__(self, env):
+        super(NeuralNetwork, self).__init__()
+        self.fc = nn.Linear(env.observation_space.n, 128)
+        self.fc2 = nn.Linear(128, env.action_space.n)
+        self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
+        x = self.relu(self.fc(x))
+        x = self.fc2(x)
+        return x
 
-model = NeuralNetwork().to(device)
-print(model)
+def get_device():
+    device = (
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
+    )
+
+    print(f"Using {device} device")
+
+    return device
