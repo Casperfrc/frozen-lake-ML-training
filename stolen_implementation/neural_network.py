@@ -5,7 +5,10 @@ from torch import nn
 
 class NeuralNetwork(nn.Module):
     def __init__(self, env):
+
         super(NeuralNetwork, self).__init__()
+        self.to(get_device())
+
         self.fc = nn.Linear(env.observation_space.n, 128)
         self.fc2 = nn.Linear(128, env.action_space.n)
         self.relu = nn.ReLU()

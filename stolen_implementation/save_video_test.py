@@ -1,15 +1,12 @@
 # stolen from here: https://gymnasium.farama.org/api/utils/#gymnasium.utils.save_video.save_video
 import gym
 import numpy as np
-from neural_network import NeuralNetwork, get_device
+from stolen_implementation.neural_network import NeuralNetwork
 from gym.utils.save_video import save_video
 import time
 import torch
 from torch import nn
 import torch.optim as optim
-
-
-
 
 
 # Create the FrozenLake environment
@@ -48,9 +45,9 @@ for episode in range(num_episodes):
       # Take action in the environment
       next_state, reward, done, _, _ = env.step(action)
 
-      print("next_state", next_state)
-      print("reward", reward)
-      print("done", done)
+      # print("next_state", next_state)
+      # print("reward", reward)
+      # print("done", done)
 
       # Convert next_state to a tensor
       next_state_tensor = torch.FloatTensor(np.eye(observation_size)[next_state])
@@ -75,5 +72,11 @@ for episode in range(num_episodes):
    
    step_starting_index = episode + 1
    episode_index += 1
+
+# Saving a model
+# torch.save(model.state_dict(), "models/model.pt")
+# Loading a model
+# model = torch.load(PATH)
+# model.eval()
 
 env.close()
