@@ -1,8 +1,6 @@
 import numpy as np
 import random
 
-from stolen_implementation.neural_network import NeuralNetwork
-
 # Use this to call:
 # python -m project_from_scratch.frozen_lake_environment.py
 
@@ -12,7 +10,7 @@ class FrozenLake():
         self.possible_actions = [1, 2, 3, 4]
         self.size = size
         self.frozenLakeHelper = FrozenLakeHelper()
-        self.grid = self.frozenLakeHelper.generate_grid(self.size)
+        self.reset()
    
     # Returns observation/state 
     def reset(self):
@@ -25,18 +23,63 @@ class FrozenLake():
         
         match action:
             case 1: # Going left
-                # Checking if the player is at the edge
-                if self.player_position[1] == 0:
-                    return self.grid
-            case 2: # Going right
-                ""
-            case 3: # Going up
+                # Checking if the player is at the left edge
                 if self.player_position[0] == 0:
                     return self.grid
-            case 4: # Going down
-                ""
+                
+                self.old_player_position = self.player_position.copy()
+                self.player_position[0] = self.player_position[0] - 1
 
-        ""
+                return self.check_if_done()
+            case 2: # Going right
+                # Checking if the player is at the right edge
+                if self.player_position[0] == self.size - 1:
+                    return self.grid
+                
+                self.old_player_position = self.player_position.copy()
+                self.player_position[0] = self.player_position[0] + 1
+
+                return self.check_if_done()
+            case 3: # Going up
+                # Checking if the player is at the top
+                if self.player_position[1] == 0:
+                    return self.grid
+                
+                self.old_player_position = self.player_position.copy()
+                self.player_position[1] = self.player_position[1] - 1
+
+                return self.check_if_done()
+            case 4: # Going down
+                # Checking if the player is at the edge
+                if self.player_position[1] == self.size - 1:
+                    return self.grid
+                
+                self.old_player_position = self.player_position.copy()
+                self.player_position[1] = self.player_position[1] + 1
+
+                return self.check_if_done()
+
+    def check_if_done(self):
+        reward = 0
+        done = False
+        player_icon = 1
+
+        # Check if player has fallen through ice
+        if self.grid[self.player_position[1]][self.player_position[0]] == 2:
+            done = True
+            reward = -1
+            player_icon = 8 # For Greeks the number 8 represents death https://populscience.blogspot.com/2019/06/symbol-of-death.html
+        
+        # Check if player has finished
+        if self.player_position == self.goal_position:
+            done = True
+            reward = 1
+            player_icon = 111
+
+        self.grid[self.old_player_position[1]][self.old_player_position[0]] = 0
+        self.grid[self.player_position[1]][self.player_position[0]] = player_icon 
+        
+        return self.grid, reward, done
 
     def print_grid(self):
         # Translation from 0, 1, 2 and 3s to letters and dashes that make the print readable.
@@ -60,7 +103,7 @@ class FrozenLake():
 class FrozenLakeHelper():
     def __init__(self):
         ""
-    
+
     def generate_grid(self, size):
         # Create empty grid
         grid = np.zeros((size, size), dtype=int)
@@ -91,7 +134,7 @@ class FrozenLakeHelper():
             grid[random_row, random_column] = 2
         
         # Hardcoding y for both goal and player
-        return grid, (player_x_position, 0), (goal_x_position, size-1)
+        return grid, [player_x_position, 0], [goal_x_position, size-1]
 
 
 model = FrozenLake(4)
