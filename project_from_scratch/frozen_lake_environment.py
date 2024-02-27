@@ -15,17 +15,18 @@ class FrozenLake():
     # Returns observation/state 
     def reset(self):
         self.grid, self.player_position, self.goal_position = self.frozenLakeHelper.generate_grid(self.size)
+        return self.grid
 
     # Returns observation/state
     def step(self, action):
         if action not in self.possible_actions:
-            return self.grid
+            return self.grid, 0, False
         
         match action:
             case 1: # Going left
                 # Checking if the player is at the left edge
                 if self.player_position[0] == 0:
-                    return self.grid
+                    return self.grid, 0, False
                 
                 self.old_player_position = self.player_position.copy()
                 self.player_position[0] = self.player_position[0] - 1
@@ -34,7 +35,7 @@ class FrozenLake():
             case 2: # Going right
                 # Checking if the player is at the right edge
                 if self.player_position[0] == self.size - 1:
-                    return self.grid
+                    return self.grid, 0, False
                 
                 self.old_player_position = self.player_position.copy()
                 self.player_position[0] = self.player_position[0] + 1
@@ -43,7 +44,7 @@ class FrozenLake():
             case 3: # Going up
                 # Checking if the player is at the top
                 if self.player_position[1] == 0:
-                    return self.grid
+                    return self.grid, 0, False
                 
                 self.old_player_position = self.player_position.copy()
                 self.player_position[1] = self.player_position[1] - 1
@@ -52,7 +53,7 @@ class FrozenLake():
             case 4: # Going down
                 # Checking if the player is at the edge
                 if self.player_position[1] == self.size - 1:
-                    return self.grid
+                    return self.grid, 0, False
                 
                 self.old_player_position = self.player_position.copy()
                 self.player_position[1] = self.player_position[1] + 1
@@ -85,6 +86,7 @@ class FrozenLake():
         # Translation from 0, 1, 2 and 3s to letters and dashes that make the print readable.
         print_grid = self.grid.astype(str)
 
+        # TODO: Add colours here?
         for row in range(len(self.grid)):
             for column in range(len(self.grid[row])):
                 match self.grid[row][column]:
@@ -98,6 +100,9 @@ class FrozenLake():
                         print_grid[row][column] = "X"
 
         print(print_grid)
+
+    def print_history(self):
+        "Something about saving the grid history and being able to print it?"
 
 
 class FrozenLakeHelper():
