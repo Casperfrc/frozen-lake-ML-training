@@ -1,3 +1,4 @@
+# Heavily inspired by some model I won't disclose the full name of. It has GPT in it, though. :D
 import torch
 import torch.nn as nn
 import torch.optim as optim

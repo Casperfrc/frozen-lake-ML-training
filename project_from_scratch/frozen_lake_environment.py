@@ -1,20 +1,17 @@
 import numpy as np
 import random
 
-# Use this to call:
-# python -m project_from_scratch.frozen_lake_environment.py
 
 class FrozenLake():
     def __init__(self, size):
         # Left, right, up, down
         self.possible_actions = [1, 2, 3, 4]
         self.size = size
-        self.frozenLakeHelper = FrozenLakeHelper()
         self.reset()
    
     # Returns observation/state 
     def reset(self):
-        self.grid, self.player_position, self.goal_position = self.frozenLakeHelper.generate_grid(self.size)
+        self.grid, self.player_position, self.goal_position = self.generate_grid()
         return self.grid
 
     # Returns observation/state
@@ -82,6 +79,39 @@ class FrozenLake():
         
         return self.grid, reward, done
 
+    def generate_grid(self):
+        # Create empty grid
+        grid = np.zeros((self.size, self.size), dtype=int)
+
+        # Set player position
+        player_x_position = random.randint(0, self.size-1)
+        grid[0][player_x_position] = 1
+
+        # Set goal position
+        goal_x_position = random.randint(0, self.size-1)
+        grid[3][goal_x_position] = 3
+
+        # I believe something is bugged here. I had an environment with only 2 holes
+        for _ in range(self.size):
+            position_not_player_or_goal = True
+
+            while(position_not_player_or_goal):
+                random_row = random.randint(0, self.size-1)
+                random_column = random.randint(0, self.size-1)
+
+                # Check if broken lake piece is on top of player or goal
+                if (random_row == 0 and random_column == player_x_position or random_row == self.size -1 and random_column == goal_x_position):
+                    continue
+
+                # There is no check for if the environment is actually solvable
+                
+                position_not_player_or_goal = False
+
+            grid[random_row, random_column] = 2
+        
+        # Hardcoding y for both goal and player
+        return grid, [player_x_position, 0], [goal_x_position, self.size-1]
+
     def print_grid(self):
         # Translation from 0, 1, 2 and 3s to letters and dashes that make the print readable.
         print_grid = self.grid.astype(str)
@@ -103,45 +133,3 @@ class FrozenLake():
 
     def print_history(self):
         "Something about saving the grid history and being able to print it?"
-
-
-class FrozenLakeHelper():
-    def __init__(self):
-        ""
-
-    def generate_grid(self, size):
-        # Create empty grid
-        grid = np.zeros((size, size), dtype=int)
-
-        # Set player position
-        player_x_position = random.randint(0, size-1)
-        grid[0][player_x_position] = 1
-
-        # Set goal position
-        goal_x_position = random.randint(0, size-1)
-        grid[3][goal_x_position] = 3
-
-        for _ in range(size):
-            position_not_player_or_goal = True
-
-            while(position_not_player_or_goal):
-                random_row = random.randint(0, size-1)
-                random_column = random.randint(0, size-1)
-
-                # Check if broken lake piece is on top of player or goal
-                if (random_row == 0 and random_column == player_x_position or random_row == size -1 and random_column == goal_x_position):
-                    continue
-
-                # There is no check for if the environment is actually solvable
-                
-                position_not_player_or_goal = False
-
-            grid[random_row, random_column] = 2
-        
-        # Hardcoding y for both goal and player
-        return grid, [player_x_position, 0], [goal_x_position, size-1]
-
-
-model = FrozenLake(4)
-
-model.print_grid()
